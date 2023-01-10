@@ -1,7 +1,0 @@
-Find the groups of alignments (*.bam) to pileup.
-Pileup in parallel.
-Note: We are excluding the insertions and read start/end markers to reduce the size of the pileup.
-Clean-up
-Output:
-  (1/2) bamlist-*.txt
-  (2/2) *.pileup

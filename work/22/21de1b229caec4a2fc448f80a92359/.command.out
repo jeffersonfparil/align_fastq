@@ -1,5 +1,0 @@
-Index the reference genome for bwa.
-Output:
-  (1/3) {reference_genome_no_ext}.amb
-  (2/3) {reference_genome_no_ext}.ann
-  (3/3) {reference_genome_no_ext}.pac

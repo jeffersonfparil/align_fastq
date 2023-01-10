@@ -1,5 +1,0 @@
-Index the reference genome for samtools.
-faidx: invalid option -- '@'
-Usage: samtools faidx <file.fa|file.fa.gz> [<reg> [...]]
-Output:
-  (1/1) {reference_genome}.fai
