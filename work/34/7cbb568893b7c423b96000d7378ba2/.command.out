@@ -1,0 +1,5 @@
+Find the groups of alignments (*.bam) to pileup.
+Pileup in parallel.
+Output:
+  (1/2) bamlist-*.txt
+  (2/2) *.pileup

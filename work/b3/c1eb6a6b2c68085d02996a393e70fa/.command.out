@@ -1,0 +1,3 @@
+Output:
+  (1/2) {ORTHONAME}.fasta
+  (2/2) {ORTHONAME}-{SPECIES}.fasta

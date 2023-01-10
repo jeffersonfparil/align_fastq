@@ -1,0 +1,2 @@
+cat: group_names.txt: No such file or directory
+ls: cannot access 'bamlist-*.txt': No such file or directory

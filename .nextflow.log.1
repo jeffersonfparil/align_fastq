@@ -1,0 +1,55 @@
+Jan-10 04:10:49.408 [main] DEBUG nextflow.cli.Launcher - $> nextflow run modules/pileup.nf -c config/params.config
+Jan-10 04:10:49.489 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 22.10.4
+Jan-10 04:10:49.507 [main] DEBUG nextflow.plugin.PluginsFacade - Setting up plugin manager > mode=prod; embedded=false; plugins-dir=/home/ubuntu/.nextflow/plugins; core-plugins: nf-amazon@1.11.2,nf-azure@0.14.2,nf-codecommit@0.1.2,nf-console@1.0.4,nf-ga4gh@1.0.4,nf-google@1.4.5,nf-tower@1.5.6,nf-wave@0.5.2
+Jan-10 04:10:49.516 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Enabled plugins: []
+Jan-10 04:10:49.517 [main] INFO  org.pf4j.DefaultPluginStatusProvider - Disabled plugins: []
+Jan-10 04:10:49.520 [main] INFO  org.pf4j.DefaultPluginManager - PF4J version 3.4.1 in 'deployment' mode
+Jan-10 04:10:49.528 [main] INFO  org.pf4j.AbstractPluginManager - No plugins
+Jan-10 04:10:49.546 [main] DEBUG nextflow.config.ConfigBuilder - User config file: /data-weedomics-1/align_fastq/config/params.config
+Jan-10 04:10:49.546 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /data-weedomics-1/align_fastq/config/params.config
+Jan-10 04:10:49.565 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Jan-10 04:10:50.132 [main] DEBUG nextflow.cli.CmdRun - Applied DSL=2 by global default
+Jan-10 04:10:50.148 [main] INFO  nextflow.cli.CmdRun - Launching `modules/pileup.nf` [pedantic_carson] DSL2 - revision: 6076d4a7cd
+Jan-10 04:10:50.149 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins default=[]
+Jan-10 04:10:50.149 [main] DEBUG nextflow.plugin.PluginsFacade - Plugins resolved requirement=[]
+Jan-10 04:10:50.159 [main] DEBUG nextflow.secret.LocalSecretsProvider - Secrets store: /home/ubuntu/.nextflow/secrets/store.json
+Jan-10 04:10:50.163 [main] DEBUG nextflow.secret.SecretsLoader - Discovered secrets providers: [nextflow.secret.LocalSecretsProvider@54e2fe] - activable => nextflow.secret.LocalSecretsProvider@54e2fe
+Jan-10 04:10:50.231 [main] DEBUG nextflow.Session - Session UUID: 29493475-c0c0-4379-b08a-ccdf6a0f62ab
+Jan-10 04:10:50.231 [main] DEBUG nextflow.Session - Run name: pedantic_carson
+Jan-10 04:10:50.231 [main] DEBUG nextflow.Session - Executor pool size: 32
+Jan-10 04:10:50.241 [main] DEBUG nextflow.util.ThreadPoolBuilder - Creating thread pool 'FileTransfer' minSize=10; maxSize=96; workQueue=LinkedBlockingQueue[10000]; allowCoreThreadTimeout=false
+Jan-10 04:10:50.264 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 22.10.4 build 5836
+  Created: 09-12-2022 09:58 UTC 
+  System: Linux 5.15.0-52-generic
+  Runtime: Groovy 3.0.13 on OpenJDK 64-Bit Server VM 17.0.3-internal+0-adhoc..src
+  Encoding: UTF-8 (UTF-8)
+  Process: 2736996@weedomics-vm-1 [127.0.1.1]
+  CPUs: 32 - Mem: 125.8 GB (12.8 GB) - Swap: 0 (0)
+Jan-10 04:10:50.286 [main] DEBUG nextflow.Session - Work-dir: /data-weedomics-1/align_fastq/work [ext2/ext3]
+Jan-10 04:10:50.286 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /data-weedomics-1/align_fastq/modules/bin
+Jan-10 04:10:50.295 [main] DEBUG nextflow.executor.ExecutorFactory - Extension executors providers=[]
+Jan-10 04:10:50.303 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Jan-10 04:10:50.329 [main] DEBUG nextflow.cache.CacheFactory - Using Nextflow cache factory: nextflow.cache.DefaultCacheFactory
+Jan-10 04:10:50.339 [main] DEBUG nextflow.util.CustomThreadPool - Creating default thread pool > poolSize: 33; maxThreads: 1000
+Jan-10 04:10:50.407 [main] DEBUG nextflow.Session - Session start
+Jan-10 04:10:50.591 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Jan-10 04:10:50.641 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:HIGH_MEM_HIGH_CPU` matches labels `HIGH_MEM_HIGH_CPU` for process with name PILEUP
+Jan-10 04:10:50.645 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Jan-10 04:10:50.645 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Jan-10 04:10:50.651 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Jan-10 04:10:50.656 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=32; memory=125.8 GB; capacity=32; pollInterval=100ms; dumpInterval=5m
+Jan-10 04:10:50.744 [main] DEBUG nextflow.Session - Workflow process names [dsl2]: PILEUP
+Jan-10 04:10:50.744 [main] DEBUG nextflow.Session - Igniting dataflow network (1)
+Jan-10 04:10:50.744 [main] DEBUG nextflow.processor.TaskProcessor - Starting process > PILEUP
+Jan-10 04:10:50.745 [main] DEBUG nextflow.script.ScriptRunner - > Awaiting termination 
+Jan-10 04:10:50.746 [main] DEBUG nextflow.Session - Session await
+Jan-10 04:10:50.922 [Task submitter] DEBUG n.executor.local.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Jan-10 04:10:50.925 [Task submitter] INFO  nextflow.Session - [7f/4e2b96] Submitted process > PILEUP
+Jan-10 04:11:39.446 [SIGINT handler] DEBUG nextflow.Session - Session aborted -- Cause: SIGINT
+Jan-10 04:11:39.459 [main] DEBUG nextflow.Session - Session await > all processes finished
+Jan-10 04:11:39.459 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Jan-10 04:11:39.463 [main] WARN  n.processor.TaskPollingMonitor - Killing running tasks (1)
+Jan-10 04:11:39.471 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=1; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=32; loadMemory=124 GB; peakRunning=1; peakCpus=32; peakMemory=124 GB; ]
+Jan-10 04:11:39.516 [main] DEBUG nextflow.cache.CacheDB - Closing CacheDB done
+Jan-10 04:11:39.528 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

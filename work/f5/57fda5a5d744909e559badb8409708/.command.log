@@ -1,0 +1,8 @@
+Find the groups of alignments (*.bam) to pileup.
+Pileup in parallel.
+[mpileup] 1 samples in 1 input files
+<mpileup> Set max per-file depth to 8000
+Clean-up
+Output:
+  (1/2) bamlist-*.txt
+  (2/2) *.pileup

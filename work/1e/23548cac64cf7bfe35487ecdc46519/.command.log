@@ -1,0 +1,6 @@
+Find the groups of alignments (*.bam) to pileup.
+Pileup in parallel.
+/usr/bin/bash: line 1: /data-weedomics-1/align_fastq/modules/../scripts/pileup.sh: Permission denied
+Output:
+  (1/2) bamlist-*.txt
+  (2/2) *.pileup

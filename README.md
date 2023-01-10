@@ -31,3 +31,12 @@ nano config/params.config # replace dir = '/data-weedomics-3/TEST_PSEUDOMONAS' w
 chmod +x run.sh
 time ./run.sh
 ```
+
+## Per module
+
+```shell
+time nextflow run modules/trim_and_qc.nf -c config/params.config
+time nextflow run modules/setup_reference_genome.nf -c config/params.config
+time nextflow run modules/align.nf -c config/params.config
+time nextflow run modules/pileup.nf -c config/params.config
+```

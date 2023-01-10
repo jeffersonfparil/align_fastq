@@ -1,0 +1,7 @@
+Find the groups of alignments (*.bam) to pileup.
+cat: group_names.txt: No such file or directory
+Pileup in parallel.
+ls: cannot access 'bamlist-*.txt': No such file or directory
+Output:
+  (1/2) bamlist-*.txt
+  (2/2) *.pileup

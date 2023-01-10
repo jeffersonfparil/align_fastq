@@ -1,0 +1,27 @@
+2023-01-09 23:24:23	-	spontaneous_mccarthy	-	9b33197fdd8f347451e6390c1b6d93f0	a1289f4b-0bc1-43f1-a1d4-46306a6b9825	nextflow modules/trim_and_qc.nf
+2023-01-09 23:26:35	-	clever_yalow	-	9b33197fdd8f347451e6390c1b6d93f0	5127fcc3-111f-4d90-891e-bc2117bc5a1b	nextflow run modules/trim_and_qc.nf
+2023-01-09 23:28:48	26.2s	insane_poitras	OK	9b33197fdd8f347451e6390c1b6d93f0	779945f6-6714-43b7-b6da-1a240666e0fd	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-09 23:29:45	29.2s	evil_mcclintock	OK	ba7d31c2be3adf46160ae2c51f86e061	e581e223-7f8e-4e97-b309-ee0aeafe9aa1	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-09 23:40:41	26.8s	scruffy_majorana	OK	cce57fb0e6c86c92cd5a8813a2cc2d9f	908f0785-0055-425a-a2bc-10801d0a5920	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-09 23:56:13	-	insane_perlman	-	3ca1d68183f4ebedff92f2ed6a4f12e5	fd0a4b42-1245-4974-97ce-2f85fbb83d2c	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-09 23:56:35	24.2s	nasty_ekeblad	ERR	40941352ff6859a0abd1d983f48cf754	c5bb5780-0b39-4b76-ad21-f4c051928673	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-09 23:57:14	1m 2s	drunk_leakey	OK	4fcfca92e2e34ab4b64c27a86a7c496e	9f8ec2a1-2b2f-45be-b1f8-064927b12757	nextflow run modules/trim_and_qc.nf -c config/params.config
+2023-01-10 00:41:31	-	special_dubinsky	-	ffcfae9e0f5347a6d02853b1e6d688b9	ac4abc99-03ae-4a98-babe-135b44a3acc8	nextflow run modules/align.nf -c config/params.config
+2023-01-10 00:49:49	-	deadly_turing	-	f072ee87244553e9c85e19e3a54b8473	afd7051d-f9fb-4c34-a24b-b709b0ca338e	nextflow run modules/setup_reference_genome.nf -c config/params.config
+2023-01-10 00:58:43	1.7s	adoring_shockley	ERR	2539bf0ec9c8c1b730509486623ba4f5	c7aeafb1-0581-43b8-a8e1-89e3318e7d62	nextflow run modules/setup_reference_genome.nf -c config/params.config
+2023-01-10 00:59:39	28.8s	fervent_jepsen	ERR	f1fd401fb15a14dd68e5dffc76c02681	a6573f53-bdd2-406b-a0ea-19b710ee2e96	nextflow run modules/setup_reference_genome.nf -c config/params.config
+2023-01-10 01:00:38	45m 51s	lonely_brown	ERR	7e9225d2cdb8b73bb0e0d2f0d09716ac	fe5edf9d-020e-4791-a34b-fbda7d410f59	nextflow run modules/setup_reference_genome.nf -c config/params.config
+2023-01-10 01:47:14	52m 16s	drunk_mayer	OK	fc9882313d01ea2be30c5f22a95de049	bb69a796-24ba-4c40-add1-b517d31f8d3f	nextflow run modules/setup_reference_genome.nf -c config/params.config
+2023-01-10 03:10:07	-	prickly_volta	-	35dd334bc8e2b0d6336c137ed9767cc6	674f4b85-8f06-4f34-b13d-2c99cd0f91b0	nextflow run modules/align.nf -c config/params.config
+2023-01-10 03:10:34	1m 25s	hopeful_majorana	OK	040134f949b7ea73471980eac872f5f0	6a19aa2d-e0eb-41cb-9a69-dfd449cb82bc	nextflow run modules/align.nf -c config/params.config
+2023-01-10 03:14:39	1.9s	hopeful_yalow	OK	555dd298e59fa15d1f06317c3b9e9dbf	0593e63c-f3ea-4c49-a8e1-dea7bdcd0248	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:15:38	1.9s	prickly_pike	OK	53c1c7f77bf1e1984bead0cebae39849	653172a4-5618-40a5-ad27-db7279a1f5cb	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:19:23	1.5s	goofy_turing	OK	53c1c7f77bf1e1984bead0cebae39849	a0819b00-76c2-488e-83c7-ee6f0b4e374a	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:24:15	1.5s	special_linnaeus	OK	d4da05a1d7c67cdb6fa69f23236864c3	1ffca47b-0abc-44d9-bba6-daf37507eb13	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:25:35	1.8s	cheesy_legentil	OK	fff1886bc3fa4947ec536e183ef51adc	f9d36d98-abf4-4010-93db-539f2bf47180	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:26:18	1.7s	prickly_cajal	OK	7d36356a5263b8edde7f59ed826a9228	ae07c018-95ae-4572-8eaf-1afa27767e04	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:27:04	-	berserk_koch	-	31764afdaeff9021649570d81eab6716	bc457b3a-cb43-4ac5-b2f3-6b6112bece10	nextflow run modules/trim_and_qc.nf
+2023-01-10 03:27:17	2m 44s	crazy_montalcini	OK	6076d4a7cd0c74975649228a2df23b45	69b1f924-a535-4e55-9715-32b41722c95a	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 03:35:22	1.2s	pedantic_pare	OK	6076d4a7cd0c74975649228a2df23b45	7ce49010-078f-44ad-9f6d-e4e63890338f	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 04:10:50	49.5s	pedantic_carson	ERR	6076d4a7cd0c74975649228a2df23b45	29493475-c0c0-4379-b08a-ccdf6a0f62ab	nextflow run modules/pileup.nf -c config/params.config
+2023-01-10 04:11:50	2m 45s	tiny_booth	OK	84c932f115b6b00d541cc00b17e5147f	bbec7df5-9aa5-46ad-94ef-a76d2713a312	nextflow run modules/pileup.nf -c config/params.config
