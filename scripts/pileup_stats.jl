@@ -1,0 +1,177 @@
+using Statistics, ProgressMeter, DataFrames, Plots, Plots.PlotMeasures
+Plots.gr()
+
+filename = ARGS[1]
+window_size = parse(Int64, ARGS[2])
+number_of_chromosomes_to_include = parse(Int64, ARGS[3])
+# # filename = "/data-weedomics-1/align_fastq/test/reads/test.pileup"
+# # window_size = 100
+# # number_of_chromosomes_to_include = 0
+# filename = "/data-weedomics-1/align_fastq/test/reads/group_A.pileup"
+# window_size = 100_000
+# number_of_chromosomes_to_include = 7
+
+### Extract mean and standard deviations of the minimum, maximum, mean, and standard deviations of coverage across windows
+function pileup_stats(filename::String, window_size::Int64=100_000)
+    file = open(filename, "r")
+    vec_chromosome = []
+    vec_window = []
+    vec_size = []
+    vec_min_MEAN = []
+    vec_max_MEAN = []
+    vec_ave_MEAN = []
+    vec_std_MEAN = []
+    vec_min_SDEV = []
+    vec_max_SDEV = []
+    vec_ave_SDEV = []
+    vec_std_SDEV = []
+    vec_min = []
+    vec_max = []
+    vec_ave = []
+    vec_std = []
+    window_start_position = 0
+    pb_start=0; seekend(file); pb_end=position(file); seekstart(file)
+    pb=ProgressMeter.Progress(pb_end, barglyphs=ProgressMeter.BarGlyphs("[=> ]"), barlen=50, color=:yellow)
+    while !eof(file)
+        line = split(readline(file), "\t")
+        ProgressMeter.update!(pb, position(file))
+        n = length(line)
+        chr = line[1]
+        pos = parse(Int64, line[2])
+        cov = parse.(Int64, line[4:3:n])
+        α = minimum(cov)
+        ω = maximum(cov)
+        μ = Statistics.mean(cov)
+        σ = Statistics.std(cov); σ = isnan(σ) ? 0.0 : σ
+        if length(vec_chromosome) == 0
+            push!(vec_chromosome, chr)
+            push!(vec_window, 1)
+            push!(vec_size, 1)
+            vec_min = [α]
+            vec_max = [ω]
+            vec_ave = [μ]
+            vec_std = [σ]
+            window_start_position = pos
+        elseif (vec_chromosome[end] == chr) & (pos < (window_start_position + window_size))
+            if sum(cov) > 0
+                vec_size[end] = vec_size[end] + 1
+            end
+            push!(vec_min, α)
+            push!(vec_max, ω)
+            push!(vec_ave, μ)
+            push!(vec_std, σ)
+        else
+            push!(vec_min_MEAN, Statistics.mean(vec_min))
+            push!(vec_max_MEAN, Statistics.mean(vec_max))
+            push!(vec_ave_MEAN, Statistics.mean(vec_ave))
+            push!(vec_std_MEAN, Statistics.mean(vec_std))
+            push!(vec_min_SDEV, Statistics.std(vec_min))
+            push!(vec_max_SDEV, Statistics.std(vec_max))
+            push!(vec_ave_SDEV, Statistics.std(vec_ave))
+            push!(vec_std_SDEV, Statistics.std(vec_std))
+            push!(vec_chromosome, chr)
+            push!(vec_window, vec_window[end] + 1)
+            push!(vec_size, 1)
+            vec_min = [α]
+            vec_max = [ω]
+            vec_ave = [μ]
+            vec_std = [σ]
+            window_start_position = pos
+        end
+    end
+    push!(vec_min_MEAN, Statistics.mean(vec_min))
+    push!(vec_max_MEAN, Statistics.mean(vec_max))
+    push!(vec_ave_MEAN, Statistics.mean(vec_ave))
+    push!(vec_std_MEAN, Statistics.mean(vec_std))
+    push!(vec_min_SDEV, Statistics.std(vec_min))
+    push!(vec_max_SDEV, Statistics.std(vec_max))
+    push!(vec_ave_SDEV, Statistics.std(vec_ave))
+    push!(vec_std_SDEV, Statistics.std(vec_std))
+    close(file)
+    out = DataFrames.DataFrame(chr=String.(vec_chromosome),
+                               window=Int64.(vec_window),
+                               n=Int64.(vec_size),
+                               MEAN_min=Float64.(vec_min_MEAN),
+                               MEAN_max=Float64.(vec_max_MEAN),
+                               MEAN_mean=Float64.(vec_ave_MEAN),
+                               MEAN_sdev=Float64.(vec_std_MEAN),
+                               SDEV_min=Float64.(vec_min_SDEV),
+                               SDEV_max=Float64.(vec_max_SDEV),
+                               SDEV_mean=Float64.(vec_ave_SDEV),
+                               SDEV_sdev=Float64.(vec_std_SDEV))
+    return(out)
+end
+
+function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_include::Int64, filename::String)
+    ### Output plot filenames
+    output_p1 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_breadth_dist.png")
+    output_p2 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_depth_dist.png")
+    output_p3 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_breadth_X_depth.png")
+    ### Include only the chromosomes
+    if number_of_chromosomes_to_include != 0
+        vec_C_chromosomes = unique(X.chr)[1:number_of_chromosomes_to_include]
+        # vec_C_chromosomes_colours = repeat(collect(Plots.palette(:blues)), Int(ceil(number_of_chromosomes_to_include/2))) # colourblind-friendly
+        vec_C_chromosomes_colours = repeat(collect(Plots.palette(:Set2_3)), Int(ceil(number_of_chromosomes_to_include/2))) # colourblind-friendly
+        # vec_C_chromosomes_colours = repeat(collect(Plots.palette(:Dark2_3)), Int(ceil(number_of_chromosomes_to_include/2))) # colourblind-friendly
+        # vec_C_chromosomes_colours = repeat(collect(Plots.palette(:Paired_3)), Int(ceil(number_of_chromosomes_to_include/2))) # colourblind-friendly
+        idx = [x ∈ vec_C_chromosomes for x in X.chr]
+        df = X[idx, :]
+    else
+        df = X
+    end
+
+    ### Find the median position of each chromosome
+    vec_C_chromosomes_positions = []
+    for i in 1:length(vec_C_chromosomes)
+        idx = df.chr .== vec_C_chromosomes[i]
+        push!(vec_C_chromosomes_positions, round(median(df.window[idx])))
+    end
+
+    ### PLOT 1: Breadth of coverage (Are we more or less covering each window at similar number of sites at least once?)
+    l = size(df, 1)
+    vec_breadth = (df.n ./ window_size) .* 100
+    mean_breadth = Statistics.mean(vec_breadth)
+    p1 = Plots.plot(df.window, vec_breadth, labels="", xlabel="Genome", ylab="Breadth of coverage\nper window (%)",
+                    title="Are we covering each window at similar\nnumber of sites at least once?",
+                    legend=:topright, top_margin=50px, left_margin=50px, bottom_margin=25px);
+    Plots.xticks!(p1, Float64.(vec_C_chromosomes_positions), string.(vec_C_chromosomes));
+    for i in 1:length(vec_C_chromosomes)
+        idx = df.chr .== vec_C_chromosomes[i]
+        colour = vec_C_chromosomes_colours[i]
+        Plots.plot!(p1, df.window[idx], vec_breadth[idx], linecolor=colour, lab="");
+    end
+    Plots.plot!(p1, df.window, repeat([mean_breadth], l), linecolor=:red, labels=string("Average breadth (", round(mean_breadth, digits=2), "%; ", Int64(round(mean_breadth * window_size / 100)), " per ", window_size, "bp window)"));
+    Plots.plot!(p1, size=(800, 500))
+    savefig(p1, output_p1)
+
+    ### PLOT 2: Depth of coverage (Among the sites covered at least once, are we coverin them around the same number of times?)
+    ### Include only the windows that we're covered at least once
+    df = df[df.n .> 0.0, :]
+    l = size(df, 1)
+    ### Plot
+    mean_MEAN_mean_depth = Statistics.mean(df.MEAN_mean)
+    p2 = Plots.plot(df.window, df.MEAN_mean, labels="", xlabel="Window", ylab="Mean depth of coverage\nper window",
+                    title="Among the sites covered at least once, are we\ncovering them around the same number of times?",
+                    legend=:topright, top_margin=50px, left_margin=50px, bottom_margin=25px);
+    Plots.xticks!(p2, Float64.(vec_C_chromosomes_positions), string.(vec_C_chromosomes));
+    for i in 1:length(vec_C_chromosomes)
+        idx = df.chr .== vec_C_chromosomes[i]
+        colour = vec_C_chromosomes_colours[i]
+        Plots.plot!(p2, df.window[idx], df.MEAN_mean[idx], linecolor=colour, lab="");
+    end
+    Plots.plot!(p2, df.window, repeat([mean_MEAN_mean_depth], l), linecolor=:red, labels=string("Average mean depth (", round(mean_MEAN_mean_depth, digits=2), "X)"));
+    Plots.plot!(p2, size=(800, 500))
+    savefig(p2, output_p2)
+
+    ### PLOT 3: Breadth and depth interactions (Is there significant trade-off between breadth and depth of coverage?)
+    point_colour = Plots.palette(:tab10)[end]
+    p3 = Plots.scatter(df.n .* 100 ./ window_size , df.MEAN_mean, xlab="Breadth (%)", ylab="Average depth (X)", color=point_colour, legend=false,
+                    title="Is there significant trade-off\nbetween breadth and depth of coverage?",
+                    top_margin=50px, left_margin=50px, bottom_margin=25px);
+    Plots.plot!(p3, size=(800, 500))
+    savefig(p3, output_p3)
+    return(output_p1, output_p2, output_p3)
+end
+
+@time X = pileup_stats(filename, window_size)
+@time output_p1, output_p2, output_p3 = plot_breadth_depth(X, number_of_chromosomes_to_include, filename)
