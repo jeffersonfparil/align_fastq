@@ -43,7 +43,7 @@ time nextflow run -dsl2 modules/pileup.nf -c config/params.config
 time nextflow run -dsl2 modules/synchronise.nf -c config/params.config
 
 time nextflow run -dsl2 modules/dedup.nf -c config/params.config
-time nextflow run -dsl2 modules/variant_calling.nf -c config/params.config
+# time nextflow run -dsl2 modules/variant_calling.nf -c config/params.config
 
 
 
