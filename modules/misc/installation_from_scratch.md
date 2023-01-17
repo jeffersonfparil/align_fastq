@@ -22,13 +22,16 @@ conda activate align_fastq
 
 4. Install software
 ```shell
-conda install -y nextflow
 conda install -y parallel
+conda install -y -c bioconda nextflow
 conda install -y -c bioconda trimmomatic
 conda install -y -c bioconda fastqc-rs
 conda install -y -c bioconda biopython
 conda install -y -c bioconda bwa
 conda install -y -c bioconda samtools
+conda install -y -c bioconda java-jdk
+conda install -y -c bioconda picard
+conda install -y -c bioconda gatk
 
 ```
 

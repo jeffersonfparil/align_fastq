@@ -32,11 +32,19 @@ chmod +x run.sh
 time ./run.sh
 ```
 
-## Per module
+## Per module (Nextflow compatabile with gatk3 is v21 and so needs -dsl2 flag to reconise params.* syntax)
 
 ```shell
-time nextflow run modules/trim_and_qc.nf -c config/params.config
-time nextflow run modules/setup_reference_genome.nf -c config/params.config
-time nextflow run modules/align.nf -c config/params.config
-time nextflow run modules/pileup.nf -c config/params.config
+time nextflow run -dsl2 modules/setup.nf -c config/params.config
+time nextflow run -dsl2 modules/trim_and_qc.nf -c config/params.config
+time nextflow run -dsl2 modules/align.nf -c config/params.config
+time nextflow run -dsl2 modules/pileup.nf -c config/params.config
+
+time nextflow run -dsl2 modules/synchronise.nf -c config/params.config
+
+time nextflow run -dsl2 modules/dedup.nf -c config/params.config
+time nextflow run -dsl2 modules/variant_calling.nf -c config/params.config
+
+
+
 ```

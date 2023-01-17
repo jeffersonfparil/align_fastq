@@ -1,8 +1,8 @@
-////////////////////////////////
-// SETUP THE REFERENCE GENOME //
-////////////////////////////////
+///////////////////////////////////////////////////
+// SETUP THE REFERENCE GENOME AND JULIA PACKAGES //
+///////////////////////////////////////////////////
 
-process FIX {
+process GENOME_FIX {
     label "HIGH_MEM_HIGH_CPU"
     input:
         val reference_genome
@@ -24,7 +24,7 @@ process FIX {
     '''
 }
 
-process BWA_INDEX {
+process GENOME_BWA_INDEX {
     label "LOW_MEM_LOW_CPU"
     input:
         val reference_genome
@@ -46,7 +46,7 @@ process BWA_INDEX {
     '''
 }
 
-process SAMTOOLS_INDEX {
+process GENOME_SAMTOOLS_INDEX {
     label "HIGH_MEM_HIGH_CPU"
     input:
         val reference_genome
@@ -64,7 +64,24 @@ process SAMTOOLS_INDEX {
     '''
 }
 
+process JULIA_INSTALL_PACKAGES {
+    label "HIGH_MEM_HIGH_CPU"
+    input:
+        val dir
+    output:
+        val 0
+    shell:
+    '''
+    #!/usr/bin/env bash
+    cd !{dir}
+    echo 'using Pkg; Pkg.add(["Statistics", "ProgressMeter", "DataFrames", "Plots"])' > install_julia_packages.jl
+    julia install_julia_packages.jl
+    rm install_julia_packages.jl
+    '''
+}
+
 workflow {
-    FIX(params.reference_genome) | \
-    (BWA_INDEX & SAMTOOLS_INDEX)
+    GENOME_FIX(params.reference_genome) | \
+    (GENOME_BWA_INDEX & GENOME_SAMTOOLS_INDEX)
+    JULIA_INSTALL_PACKAGES(params.dir_reads)
 }

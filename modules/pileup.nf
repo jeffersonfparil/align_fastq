@@ -57,15 +57,16 @@ process COVERAGE_BREADTH_AND_DEPTH {
     #!/usr/bin/env bash
     cd !{dir_reads}
 
-    ### Extract coverages across pools and loci then calculate means and sds in R?
-
-
-    echo "Clean-up"
-    rm *.tmp
+    ### Estimate summary statistics for the breadth and depth of coverage
+    parallel -j !{task.cpus} \
+        julia !{projectDir}/../scripts/pileup_stats.jl \
+            {} \
+            100000 \
+            7 \
+    ::: $(ls *.pileup)
 
     echo "Output:"
-    echo "  (1/2) bamlist-*.txt"
-    echo "  (2/2) *.pileup"
+    echo "  (1/1) *-coverage_stats.png"
     '''
 }
 
@@ -74,5 +75,6 @@ workflow {
            params.dir_reads,
            params.groupings,
            params.min_mapping_quality_Q,
-           params.min_base_quality_Q)
+           params.min_base_quality_Q) | \
+    COVERAGE_BREADTH_AND_DEPTH
 }

@@ -46,8 +46,6 @@ process ALIGN {
     '''
 }
 
-
-
 workflow {
     ALIGN(params.reference_genome,
           params.dir_reads,

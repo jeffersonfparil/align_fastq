@@ -1,3 +1,4 @@
+# using Pkg; Pkg.add(["Statistics", "ProgressMeter", "DataFrames", "Plots"])
 using Statistics, ProgressMeter, DataFrames, Plots, Plots.PlotMeasures
 Plots.gr()
 
@@ -12,7 +13,7 @@ number_of_chromosomes_to_include = parse(Int64, ARGS[3])
 # number_of_chromosomes_to_include = 7
 
 ### Extract mean and standard deviations of the minimum, maximum, mean, and standard deviations of coverage across windows
-function pileup_stats(filename::String, window_size::Int64=100_000)
+function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.DataFrame
     file = open(filename, "r")
     vec_chromosome = []
     vec_window = []
@@ -102,11 +103,54 @@ function pileup_stats(filename::String, window_size::Int64=100_000)
     return(out)
 end
 
-function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_include::Int64, filename::String)
-    ### Output plot filenames
-    output_p1 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_breadth_dist.png")
-    output_p2 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_depth_dist.png")
-    output_p3 = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_breadth_X_depth.png")
+function fit_bestestish(x::Vector{T}, y::Vector{T}; min_poly::Float64=0.50, max_poly::Float64=7.0, step_poly::Float64=0.50)::Tuple{Vector{T}, Vector{T}, String} where T <: Number
+    # min_poly=0.50; max_poly=7.0; step_poly=0.50
+    n = length(x)
+    @assert(n == length(y))
+    idx = sortperm(x)
+    x = x[idx]
+    y = y[idx]
+    X = ones(n)
+    vec_poly_set = collect(min_poly:step_poly:max_poly)
+    m = length(vec_poly_set)
+    labels = []
+    RMSE = []
+    for i in 1:m
+        # i = 1
+        χ = hcat(X, x.^vec_poly_set[i])
+        for j in i:m
+            # j = i
+            if i != j
+                χ = hcat(χ, x.^vec_poly_set[j])
+            end
+            β̂ = y \ χ
+            ŷ = χ * β̂'
+            lab = i!=j ? string(vec_poly_set[i], "-", vec_poly_set[j]) : string(vec_poly_set[i])
+            rmse = sqrt(mean((y .- ŷ).^2))
+            # println(string(lab, ": ", rmse))
+            # @show UnicodePlots.scatterplot(x, ŷ)
+            # @show UnicodePlots.scatterplot(y, ŷ)
+            # println("##################################")
+            push!(labels, lab)
+            push!(RMSE, rmse)
+        end
+    end
+    idx = sortperm(RMSE)
+    df = DataFrames.DataFrame(id=labels[idx], RMSE=RMSE[idx])
+    vec_poly = parse.(Float64, split(df.id[1], "-"))
+    for p in vec_poly
+        X = hcat(X, x.^p)
+    end
+    β̂ = y \ X
+    ŷ = X * β̂'
+    fit_eq = string("y ~ ", round(β̂'[1], digits=2), " + ", join(string.(round.(β̂'[2:end], digits=2), "x^", vec_poly), " + "))
+    return(x, ŷ, fit_eq)
+end
+
+function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_include::Int64, filename::String)::String
+    # @time X = pileup_stats(filename, window_size)
+    ### Output plot filename
+    filename_output = string(join(split(filename, ".")[1:(end-1)], "."), "-coverage_stats.png")
     ### Include only the chromosomes
     if number_of_chromosomes_to_include != 0
         vec_C_chromosomes = unique(X.chr)[1:number_of_chromosomes_to_include]
@@ -133,7 +177,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     mean_breadth = Statistics.mean(vec_breadth)
     p1 = Plots.plot(df.window, vec_breadth, labels="", xlabel="Genome", ylab="Breadth of coverage\nper window (%)",
                     title="Are we covering each window at similar\nnumber of sites at least once?",
-                    legend=:topright, top_margin=50px, left_margin=50px, bottom_margin=25px);
+                    legend=:topright, top_margin=50px, left_margin=80px, bottom_margin=50px);
     Plots.xticks!(p1, Float64.(vec_C_chromosomes_positions), string.(vec_C_chromosomes));
     for i in 1:length(vec_C_chromosomes)
         idx = df.chr .== vec_C_chromosomes[i]
@@ -141,8 +185,8 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
         Plots.plot!(p1, df.window[idx], vec_breadth[idx], linecolor=colour, lab="");
     end
     Plots.plot!(p1, df.window, repeat([mean_breadth], l), linecolor=:red, labels=string("Average breadth (", round(mean_breadth, digits=2), "%; ", Int64(round(mean_breadth * window_size / 100)), " per ", window_size, "bp window)"));
-    Plots.plot!(p1, size=(800, 500))
-    savefig(p1, output_p1)
+    # Plots.plot!(p1, size=(800, 500))
+    # savefig(p1, output_p1)
 
     ### PLOT 2: Depth of coverage (Among the sites covered at least once, are we coverin them around the same number of times?)
     ### Include only the windows that we're covered at least once
@@ -150,9 +194,9 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     l = size(df, 1)
     ### Plot
     mean_MEAN_mean_depth = Statistics.mean(df.MEAN_mean)
-    p2 = Plots.plot(df.window, df.MEAN_mean, labels="", xlabel="Window", ylab="Mean depth of coverage\nper window",
+    p2 = Plots.plot(df.window, df.MEAN_mean, labels="", xlabel="Genome", ylab="Mean depth of coverage\nper window",
                     title="Among the sites covered at least once, are we\ncovering them around the same number of times?",
-                    legend=:topright, top_margin=50px, left_margin=50px, bottom_margin=25px);
+                    legend=:topright, top_margin=50px, left_margin=80px, bottom_margin=25px);
     Plots.xticks!(p2, Float64.(vec_C_chromosomes_positions), string.(vec_C_chromosomes));
     for i in 1:length(vec_C_chromosomes)
         idx = df.chr .== vec_C_chromosomes[i]
@@ -160,18 +204,35 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
         Plots.plot!(p2, df.window[idx], df.MEAN_mean[idx], linecolor=colour, lab="");
     end
     Plots.plot!(p2, df.window, repeat([mean_MEAN_mean_depth], l), linecolor=:red, labels=string("Average mean depth (", round(mean_MEAN_mean_depth, digits=2), "X)"));
-    Plots.plot!(p2, size=(800, 500))
-    savefig(p2, output_p2)
+    # Plots.plot!(p2, size=(800, 500))
+    # savefig(p2, output_p2)
 
-    ### PLOT 3: Breadth and depth interactions (Is there significant trade-off between breadth and depth of coverage?)
+    ### PLOT 3: Mean depth of breadth of coverage with sd bars
+    p3 = Plots.plot(df.window, df.MEAN_mean, yerr=df.SDEV_mean, linecolor=nothing, labels="", xlabel="Genome", ylab="Depth of coverage\n(± standard deviation)",
+                    title="How much is the variation in average depth per window?",
+                    legend=:topright, top_margin=50px, left_margin=80px, bottom_margin=50px);
+    Plots.xticks!(p3, Float64.(vec_C_chromosomes_positions), string.(vec_C_chromosomes));
+    for i in 1:length(vec_C_chromosomes)
+        idx = df.chr .== vec_C_chromosomes[i]
+        colour = vec_C_chromosomes_colours[i]
+        Plots.plot!(p3, df.window[idx], df.MEAN_mean[idx], yerr=df.SDEV_mean[idx], linecolor=colour, markerstrokecolor=colour, labels="");
+        Plots.scatter!(p3, df.window[idx], df.MEAN_mean[idx], color=:black, markerstrokewidth=0.001, markersize=2, alpha=0.50, labels="");
+    end
+
+    ### PLOT 4: Breadth and depth interactions (Is there significant trade-off between breadth and depth of coverage?)
+    x = df.n .* 100 ./ window_size
+    y = df.MEAN_mean
+    x̂, ŷ, fit_eq = fit_bestestish(x, y)
     point_colour = Plots.palette(:tab10)[end]
-    p3 = Plots.scatter(df.n .* 100 ./ window_size , df.MEAN_mean, xlab="Breadth (%)", ylab="Average depth (X)", color=point_colour, legend=false,
+    p4 = Plots.scatter(x, y, labels="", xlab="Breadth (%)", ylab="Average depth (X)",
                     title="Is there significant trade-off\nbetween breadth and depth of coverage?",
-                    top_margin=50px, left_margin=50px, bottom_margin=25px);
-    Plots.plot!(p3, size=(800, 500))
-    savefig(p3, output_p3)
-    return(output_p1, output_p2, output_p3)
+                    legend=:topright, color=point_colour, markerstrokewidth=0.001, alpha=0.25,
+                    top_margin=50px, left_margin=80px, bottom_margin=50px);
+    Plots.plot!(p4, x̂, ŷ, linecolor=:red, labels=fit_eq);
+    pout = Plots.plot(p1, p2, p3, p4, layout=4, size=(1_600, 1_000));
+    savefig(pout, filename_output)
+    return(filename_output)
 end
 
 @time X = pileup_stats(filename, window_size)
-@time output_p1, output_p2, output_p3 = plot_breadth_depth(X, number_of_chromosomes_to_include, filename)
+@time png_out = plot_breadth_depth(X, number_of_chromosomes_to_include, filename)
