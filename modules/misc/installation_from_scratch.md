@@ -31,7 +31,7 @@ conda install -y -c bioconda bwa
 conda install -y -c bioconda samtools
 conda install -y -c bioconda java-jdk
 conda install -y -c bioconda picard
-conda install -y -c bioconda gatk
+conda install -y -c bioconda gatk4
 
 ```
 

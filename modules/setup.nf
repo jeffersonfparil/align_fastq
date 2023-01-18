@@ -64,6 +64,26 @@ process GENOME_SAMTOOLS_INDEX {
     '''
 }
 
+process GENOME_GATK4_INDEX {
+    label "HIGH_MEM_HIGH_CPU"
+    input:
+        val reference_genome
+    shell:
+    '''
+    #!/usr/bin/env bash
+    MEM=$(echo !{task.memory} | cut -d' ' -f1)
+    REF=!{reference_genome}
+
+    echo 'Index the reference genome for GATK4.'
+    gatk --java-options "-Xmx${MEM}g" \
+        CreateSequenceDictionary \
+        -R ${REF} \
+
+    echo "Output:"
+    echo "  (1/1) {reference_genome_no_ext}.dict"
+    '''
+}
+
 process JULIA_INSTALL_PACKAGES {
     label "HIGH_MEM_HIGH_CPU"
     input:
@@ -82,6 +102,6 @@ process JULIA_INSTALL_PACKAGES {
 
 workflow {
     GENOME_FIX(params.reference_genome) | \
-    (GENOME_BWA_INDEX & GENOME_SAMTOOLS_INDEX)
+    (GENOME_BWA_INDEX & GENOME_SAMTOOLS_INDEX & GENOME_GATK4_INDEX)
     JULIA_INSTALL_PACKAGES(params.dir_reads)
 }
