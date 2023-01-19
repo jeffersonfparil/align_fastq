@@ -1,5 +1,5 @@
 # align_fastq
-Alignment or mapping of nucleotide sequencing reads
+Workflow to align nucleotide sequencing data (i.e. short (<1kb) paired-end reads) into reference genomes, call and count variants.
 
 ## Installation
 
@@ -22,18 +22,36 @@ conda env create -n align_fastq --file align_fastq/align_fastq.yml
 conda activate align_fastq
 ```
 
-## Quickstart
+## Configuration
 
-Run the example pipeline:
+1. `dir_reads`: location of the short paired-end sequencing reads (e.g. '/data-weedomics-1/align_fastq/test/reads')
+2. `ext_read_1`: suffix of the read 1 (e.g. '_R1.fastq.gz'; note that reads of each paired-end read pair needs to have the same base name excluding the read 1 or 2 identifier)
+3. `ext_read_2`: suffix of the read 2 (e.g. '_R2.fastq.gz')
+4. `adapters`: fasta file containing adapter sequences used during sequencing (e.g. "${projectDir}/../test/IDT_for_Illumina_TruSeq_UD_and_CD_indexes.fa")
+5. `reference_genome`: reference genome in fasta format (e.g. "${projectDir}/../test/ref/Lolium_rigidum_genome.fasta")
+6. `min_mapping_quality_Q`: minimum mapping quality (e.g. 20 which equates to 0.01 error rate)
+7. `min_base_quality_Q`: minimum sequenced base quality (e.g. 20 which equates to 0.01 error rate)
+8. `groupings`: list of intended groupings of the paired-end reads (e.g. "${projectDir}/../config/groupings.txt")
+    - Formatted as headerless, two-columned, comma-delimited file
+    - Column 1: group name, i.e. the name of the final `*.vcf.`gz and/or `*.sync` file/s
+    - Column 2: base name of the paired-end read excluding the read 1 or 2 identifier (see item 2 above for more details) which belongs to the correspponding group in column 1
+    - Note: one or more paired-end reads can belong to a single group
+
+## Run
+
+Run for individual genotyping sequence data:
 ```shell
 cd align_fastq/
-nano config/params.config # replace dir = '/data-weedomics-3/TEST_PSEUDOMONAS' with a valid path in your machine
-chmod +x run.sh
-time ./run.sh
+time ./run_indiseq.sh
 ```
 
-## Per module (Nextflow compatabile with gatk3 is v21 and so needs -dsl2 flag to reconise params.* syntax)
+Run for pool genotyping sequence data:
+```shell
+cd align_fastq/
+time ./run_poolseq.sh
+```
 
+Run each module, individually usually to troubleshoot:
 ```shell
 time nextflow run modules/setup.nf -c config/params.config              ### Setup reference genome and Julia packages
 time nextflow run modules/trim_and_qc.nf -c config/params.config        ### Remove adapters and perform quality check of the raw reads
@@ -44,5 +62,4 @@ time nextflow run modules/synchronise.nf -c config/params.config        ### For 
 ### For Indi-seq
 time nextflow run modules/dedup.nf -c config/params.config              ### For Indi-seq data: remove PCR duplicates from the raw reads
 time nextflow run modules/variant_calling.nf -c config/params.config    ### For Indi-seq data: perform varant calling but first index the alignments, and add read groups, and finally merge the VCF files
-
 ```

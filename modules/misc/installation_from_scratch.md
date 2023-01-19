@@ -28,7 +28,7 @@ conda install -y -c bioconda trimmomatic
 conda install -y -c bioconda fastqc-rs
 conda install -y -c bioconda biopython
 conda install -y -c bioconda bwa
-conda install -y -c bioconda samtools
+conda install -y -c bioconda samtools bcftools openssl=1.0
 conda install -y -c bioconda java-jdk
 conda install -y -c bioconda picard
 conda install -y -c bioconda gatk4

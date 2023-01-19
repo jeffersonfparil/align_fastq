@@ -1,1 +1,2 @@
-group_A,test
+group_A,test1
+group_A,test2

@@ -100,6 +100,7 @@ process MERGE_VCFS {
     '''
     #!/usr/bin/env bash
     cd !{dir_reads}
+    CPU=!(task.cpus}
     MEM=$(echo !{task.memory} | cut -d' ' -f1)
     
     echo 'Find the groups of vcfs to merge.'
@@ -117,10 +118,16 @@ process MERGE_VCFS {
     echo "Merge vcfs"
     for g in $(cat group_names.tmp)
     do
-        gatk --java-options "-Xmx${MEM}g" \
-            MergeVcfs \
-            -I vcflist-${g}.txt \
-            -O ${g}.vcf.gz 
+        bcftools merge \
+            --threads ${CPU} \
+            -l vcflist-${g}.txt \
+            -m all \
+            -O z \
+            -o ${g}.vcf.gz
+        # gatk --java-options "-Xmx${MEM}g" \
+        #     MergeVcfs \
+        #     -I vcflist-${g}.txt \
+        #     -O ${g}.vcf.gz 
     done
 
     echo "Cleanup"
@@ -133,8 +140,8 @@ process MERGE_VCFS {
 }
 
 workflow {
-    INDEX_DEDUP(params.dir_reads, params.reference_genome, params.groupings) | \
-        ADD_READ_GROUPS | \
-        CALL_VARIANTS | \
-        MERGE_VCFS
+    // INDEX_DEDUP(params.dir_reads, params.reference_genome, params.groupings) | \
+    //     ADD_READ_GROUPS | \
+    //     CALL_VARIANTS | \
+        MERGE_VCFS(params.dir_reads, params.groupings)
 }
