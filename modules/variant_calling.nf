@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////
+/////////////////////
 // VARIANT CALLING //
-/////////////////////////////////////////////////////////////////////
+/////////////////////
 
 process INDEX_DEDUP {
     label "HIGH_MEM_HIGH_CPU"
@@ -127,7 +127,7 @@ process MERGE_VCFS {
         # gatk --java-options "-Xmx${MEM}g" \
         #     MergeVcfs \
         #     -I vcflist-${g}.txt \
-        #     -O ${g}.vcf.gz 
+        #     -O ${g}.vcf.gz ### THIS MERGES VARIANTS, NOT SAMPLES!
     done
 
     echo "Cleanup"
@@ -140,8 +140,8 @@ process MERGE_VCFS {
 }
 
 workflow {
-    // INDEX_DEDUP(params.dir_reads, params.reference_genome, params.groupings) | \
-    //     ADD_READ_GROUPS | \
-    //     CALL_VARIANTS | \
-        MERGE_VCFS(params.dir_reads, params.groupings)
+    INDEX_DEDUP(params.dir_reads, params.reference_genome, params.groupings) | \
+        ADD_READ_GROUPS | \
+        CALL_VARIANTS | \
+        MERGE_VCFS
 }

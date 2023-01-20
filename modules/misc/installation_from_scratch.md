@@ -28,16 +28,16 @@ conda install -y -c bioconda trimmomatic
 conda install -y -c bioconda fastqc-rs
 conda install -y -c bioconda biopython
 conda install -y -c bioconda bwa
-conda install -y -c bioconda samtools bcftools openssl=1.0
+conda install -y -c bioconda samtools
 conda install -y -c bioconda java-jdk
 conda install -y -c bioconda picard
 conda install -y -c bioconda gatk4
-
+conda install -y -c bioconda bcftools
 ```
 
 5. Export environment and create a new environment based on the exported settings
 ```shell
-conda env export -n align_fastq > align_fastq.yml
+conda env export -n BCFTOOLS > align_fastq.yml
 ```
 
 6. Import conda environment
