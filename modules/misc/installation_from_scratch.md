@@ -21,6 +21,8 @@ conda activate align_fastq
 ```
 
 4. Install software
+
+- align_fastq
 ```shell
 conda install -y parallel
 conda install -y -c bioconda nextflow
@@ -32,12 +34,20 @@ conda install -y -c bioconda samtools
 conda install -y -c bioconda java-jdk
 conda install -y -c bioconda picard
 conda install -y -c bioconda gatk4
+```
+
+- align_fastq_bcftools
+```shell
+conda install -y parallel
+conda install -y -c bioconda nextflow
 conda install -y -c bioconda bcftools
 ```
 
+
 5. Export environment and create a new environment based on the exported settings
 ```shell
-conda env export -n BCFTOOLS > align_fastq.yml
+conda env export -n align_fastq > align_fastq.yml
+conda env export -n align_fastq_bcftools > align_fastq_bcftools.yml
 ```
 
 6. Import conda environment

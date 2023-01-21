@@ -19,6 +19,7 @@ sh ./Miniconda3-latest-Linux-x86_64.sh
 4. Import and activate [align_fastq conda environment](align_fastq.yml)
 ```shell
 conda env create -n align_fastq --file align_fastq/align_fastq.yml
+conda env create -n align_fastq --file align_fastq/align_fastq_bcftools.yml
 conda activate align_fastq
 ```
 
