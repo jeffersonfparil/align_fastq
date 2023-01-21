@@ -100,7 +100,7 @@ process MERGE_VCFS {
     '''
     #!/usr/bin/env bash
     cd !{dir_reads}
-    CPU=!(task.cpus}
+    CPU=!{task.cpus}
     MEM=$(echo !{task.memory} | cut -d' ' -f1)
     
     echo 'Find the groups of vcfs to merge.'
@@ -115,8 +115,6 @@ process MERGE_VCFS {
         done
     done
 
-    echo "Activa conda environemnt where bcftools works."
-    conda activate align_fastq_bcftools
     echo "Merge vcfs"
     for g in $(cat group_names.tmp)
     do
@@ -133,7 +131,6 @@ process MERGE_VCFS {
     done
 
     echo "Cleanup"
-    conda activate align_fastq
     rm *.tmp
 
     echo "Output:"
