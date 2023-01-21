@@ -45,7 +45,7 @@ Setup your alignment, and variant calling/counting pipeline. You will find the f
     - **min_base_quality_Q**: minimum sequenced base quality (e.g. 20 which equates to 0.01 error rate)
     - **groupings**: list of intended groupings of the paired-end reads (e.g. "${projectDir}/../config/groupings.txt")
 
-3. [`process.config`](config/process.config): list of the computing resource allocation availble to you. Assign the number of cpus and memory capacity to use for low and high resources intensive tasks:
+3. [`process.config`](config/process.config): list of the computing resource allocation availble to you. Assign the number of cpus and memory capacity to use for low and high resources tasks:
 
     - LOW_MEM_LOW_CPU
     - HIGH_MEM_HIGH_CPU
@@ -64,7 +64,7 @@ cd align_fastq/
 time ./run_poolseq.sh
 ```
 
-Run each module, individually usually to troubleshoot:
+Run each module individually, usually to troubleshoot:
 ```shell
 time nextflow run modules/setup.nf -c config/params.config              ### Setup reference genome and Julia packages
 time nextflow run modules/trim_and_qc.nf -c config/params.config        ### Remove adapters and perform quality check of the raw reads
