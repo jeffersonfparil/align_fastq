@@ -1,5 +1,5 @@
-# using Pkg; Pkg.add(["Statistics", "ProgressMeter", "DataFrames", "Plots"])
-using Statistics, ProgressMeter, DataFrames, Plots, Plots.PlotMeasures
+# using Pkg; Pkg.add(["StatsBase", "ProgressMeter", "DataFrames", "Plots"])
+using StatsBase, ProgressMeter, DataFrames, Plots, Plots.PlotMeasures
 Plots.gr()
 
 filename = ARGS[1]
@@ -18,6 +18,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
     vec_chromosome = []
     vec_window = []
     vec_size = []
+    vec_idx_min_MODE = []
     vec_min_MEAN = []
     vec_max_MEAN = []
     vec_ave_MEAN = []
@@ -26,6 +27,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
     vec_max_SDEV = []
     vec_ave_SDEV = []
     vec_std_SDEV = []
+    vec_idx_min = []
     vec_min = []
     vec_max = []
     vec_ave = []
@@ -40,14 +42,16 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
         chr = line[1]
         pos = parse(Int64, line[2])
         cov = parse.(Int64, line[4:3:n])
+        idx_α = argmin(cov)
         α = minimum(cov)
         ω = maximum(cov)
-        μ = Statistics.mean(cov)
-        σ = Statistics.std(cov); σ = isnan(σ) ? 0.0 : σ
+        μ = StatsBase.mean(cov)
+        σ = StatsBase.std(cov); σ = isnan(σ) ? 0.0 : σ
         if length(vec_chromosome) == 0
             push!(vec_chromosome, chr)
             push!(vec_window, 1)
             push!(vec_size, 1)
+            vec_idx_min = [idx_α]
             vec_min = [α]
             vec_max = [ω]
             vec_ave = [μ]
@@ -57,22 +61,25 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             if sum(cov) > 0
                 vec_size[end] = vec_size[end] + 1
             end
+            push!(vec_idx_min, idx_α)
             push!(vec_min, α)
             push!(vec_max, ω)
             push!(vec_ave, μ)
             push!(vec_std, σ)
         else
-            push!(vec_min_MEAN, Statistics.mean(vec_min))
-            push!(vec_max_MEAN, Statistics.mean(vec_max))
-            push!(vec_ave_MEAN, Statistics.mean(vec_ave))
-            push!(vec_std_MEAN, Statistics.mean(vec_std))
-            push!(vec_min_SDEV, Statistics.std(vec_min))
-            push!(vec_max_SDEV, Statistics.std(vec_max))
-            push!(vec_ave_SDEV, Statistics.std(vec_ave))
-            push!(vec_std_SDEV, Statistics.std(vec_std))
+            push!(vec_idx_min_MODE, StatsBase.mode(vec_min))
+            push!(vec_min_MEAN, StatsBase.mean(vec_min))
+            push!(vec_max_MEAN, StatsBase.mean(vec_max))
+            push!(vec_ave_MEAN, StatsBase.mean(vec_ave))
+            push!(vec_std_MEAN, StatsBase.mean(vec_std))
+            push!(vec_min_SDEV, StatsBase.std(vec_min))
+            push!(vec_max_SDEV, StatsBase.std(vec_max))
+            push!(vec_ave_SDEV, StatsBase.std(vec_ave))
+            push!(vec_std_SDEV, StatsBase.std(vec_std))
             push!(vec_chromosome, chr)
             push!(vec_window, vec_window[end] + 1)
             push!(vec_size, 1)
+            vec_idx_min = [idx_α]
             vec_min = [α]
             vec_max = [ω]
             vec_ave = [μ]
@@ -80,18 +87,20 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             window_start_position = pos
         end
     end
-    push!(vec_min_MEAN, Statistics.mean(vec_min))
-    push!(vec_max_MEAN, Statistics.mean(vec_max))
-    push!(vec_ave_MEAN, Statistics.mean(vec_ave))
-    push!(vec_std_MEAN, Statistics.mean(vec_std))
-    push!(vec_min_SDEV, Statistics.std(vec_min))
-    push!(vec_max_SDEV, Statistics.std(vec_max))
-    push!(vec_ave_SDEV, Statistics.std(vec_ave))
-    push!(vec_std_SDEV, Statistics.std(vec_std))
+    push!(vec_idx_min_MODE, StatsBase.mode(vec_min))
+    push!(vec_min_MEAN, StatsBase.mean(vec_min))
+    push!(vec_max_MEAN, StatsBase.mean(vec_max))
+    push!(vec_ave_MEAN, StatsBase.mean(vec_ave))
+    push!(vec_std_MEAN, StatsBase.mean(vec_std))
+    push!(vec_min_SDEV, StatsBase.std(vec_min))
+    push!(vec_max_SDEV, StatsBase.std(vec_max))
+    push!(vec_ave_SDEV, StatsBase.std(vec_ave))
+    push!(vec_std_SDEV, StatsBase.std(vec_std))
     close(file)
     out = DataFrames.DataFrame(chr=String.(vec_chromosome),
                                window=Int64.(vec_window),
                                n=Int64.(vec_size),
+                               MODE_idx_min=Float64.(vec_idx_min_MODE),
                                MEAN_min=Float64.(vec_min_MEAN),
                                MEAN_max=Float64.(vec_max_MEAN),
                                MEAN_mean=Float64.(vec_ave_MEAN),
@@ -164,6 +173,11 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
         df = X
     end
 
+    ### Find the number of pools
+    f = open(filename, "r")
+    n_pools = (length(split(readline(f), "\t")) - 3) / 3
+    close(f)
+
     ### Find the median position of each chromosome
     vec_C_chromosomes_positions = []
     for i in 1:length(vec_C_chromosomes)
@@ -174,7 +188,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     ### PLOT 1: Breadth of coverage (Are we more or less covering each window at similar number of sites at least once?)
     l = size(df, 1)
     vec_breadth = (df.n ./ window_size) .* 100
-    mean_breadth = Statistics.mean(vec_breadth)
+    mean_breadth = StatsBase.mean(vec_breadth)
     p1 = Plots.plot(df.window, vec_breadth, labels="", xlabel="Genome", ylab="Breadth of coverage\nper window (%)",
                     title="Are we covering each window at similar\nnumber of sites at least once?",
                     legend=:topright, top_margin=50px, left_margin=80px, bottom_margin=50px);
@@ -193,7 +207,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     df = df[df.n .> 0.0, :]
     l = size(df, 1)
     ### Plot
-    mean_MEAN_mean_depth = Statistics.mean(df.MEAN_mean)
+    mean_MEAN_mean_depth = StatsBase.mean(df.MEAN_mean)
     p2 = Plots.plot(df.window, df.MEAN_mean, labels="", xlabel="Genome", ylab="Mean depth of coverage\nper window",
                     title="Among the sites covered at least once, are we\ncovering them around the same number of times?",
                     legend=:topright, top_margin=50px, left_margin=80px, bottom_margin=25px);
@@ -229,7 +243,27 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
                     legend=:topright, color=point_colour, markerstrokewidth=0.001, alpha=0.25,
                     top_margin=50px, left_margin=80px, bottom_margin=50px);
     Plots.plot!(p4, x̂, ŷ, linecolor=:red, labels=fit_eq);
-    pout = Plots.plot(p1, p2, p3, p4, layout=4, size=(1_600, 1_000));
+
+    ### The most frequent least covered pool
+    p5 = Plots.histogram(df.MODE_idx_min,
+                         label="",
+                         xlabel="Pool",
+                         ylab="Frequency",
+                         title="Which pool/s has the least coverage?",
+                         top_margin=50px, left_margin=80px, bottom_margin=50px);
+    xlims!(p5, 0, n_pools);
+    Plots.xticks!(p5, collect(1:1:n_pools) .- 0.5, string.(Int.(collect(1:1:n_pools))));
+    p6 = Plots.histogram(df.MODE_idx_min[df.MEAN_min .== 0.0],
+                         label="",
+                         xlabel="Pool",
+                         ylab="Frequency",
+                         title="Which pool/s has the most complete lack of coverage?",
+                         top_margin=50px, left_margin=80px, bottom_margin=50px);
+    xlims!(p6, 0, n_pools);
+    Plots.xticks!(p6, collect(1:1:n_pools) .- 0.5, string.(Int.(collect(1:1:n_pools))));
+    
+    ### Merge plots
+    pout = Plots.plot(p1, p2, p3, p4, p5, p6, layout=(3,2), size=(1_600, 1_500));
     savefig(pout, filename_output)
     return(filename_output)
 end

@@ -94,7 +94,7 @@ process JULIA_INSTALL_PACKAGES {
     '''
     #!/usr/bin/env bash
     cd !{dir}
-    echo 'using Pkg; Pkg.add(["Statistics", "ProgressMeter", "DataFrames", "Plots"])' > install_julia_packages.jl
+    echo 'using Pkg; Pkg.add(["StatsBase", "ProgressMeter", "DataFrames", "Plots"])' > install_julia_packages.jl
     julia install_julia_packages.jl
     rm install_julia_packages.jl
     '''
