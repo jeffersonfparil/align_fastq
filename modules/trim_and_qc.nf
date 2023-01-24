@@ -34,7 +34,7 @@ process TRIM {
 }
 
 process QC {
-    label "LOW_MEM_LOW_CPU"
+    label "HIGH_MEM_HIGH_CPU"
     input:
         val dir_reads
     shell:
