@@ -50,9 +50,11 @@ process QC {
 
     for f in $(ls *${ext1}) $(ls *${ext2})
     do
-        fqc \
-            -q ${f} > fastqc-${f}.html \
-        || continue
+    parallel -j !{task.cpus} \
+        !{projectDir}/../scripts/qc.sh \
+            {} \
+        ::: $(ls paired-UG4_combined_R*.fastq.gz)
+    
     done
     
     echo "Output:"
