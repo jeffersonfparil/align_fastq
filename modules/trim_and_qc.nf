@@ -11,8 +11,6 @@ process TRIM {
         val adapters
     output:
         val dir_reads
-        val ext_read_1
-        val ext_read_2
     shell:
     '''
     #!/usr/bin/env bash
@@ -39,23 +37,15 @@ process QC {
     label "LOW_MEM_LOW_CPU"
     input:
         val dir_reads
-        val ext_read_1
-        val ext_read_2
     shell:
     '''
     #!/usr/bin/env bash
     cd !{dir_reads}
-    ext1=$(echo !{ext_read_1})
-    ext2=$(echo !{ext_read_2})
-
-    for f in $(ls *${ext1}) $(ls *${ext2})
-    do
+    
     parallel -j !{task.cpus} \
         !{projectDir}/../scripts/qc.sh \
             {} \
-        ::: $(ls paired-UG4_combined_R*.fastq.gz)
-    
-    done
+        ::: $(ls paired-*)
     
     echo "Output:"
     echo "  (1/1) fastqc-*.html"
