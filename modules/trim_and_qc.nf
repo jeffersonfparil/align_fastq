@@ -21,7 +21,7 @@ process TRIM {
     ext2=$(echo !{ext_read_2})
     adapters=!{adapters}
 
-    parallel -j !{taks.cpus} \
+    parallel -j !{task.cpus} \
         !{projectDir}/../scripts/trim.sh \
             {} \
             ${ext1} \
