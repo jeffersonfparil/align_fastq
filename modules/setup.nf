@@ -11,7 +11,6 @@ process GENOME_FIX {
     shell:
     '''
     #!/usr/bin/env bash
-    
     echo 'Fix the reference genome format.'
     mv !{reference_genome} !{reference_genome}.bk
     python3 !{projectDir}/../scripts/fix_reference_genome_format.py \
@@ -25,6 +24,7 @@ process GENOME_FIX {
 }
 
 process GENOME_BWA_INDEX {
+    errorStrategy 'terminate'
     label "LOW_MEM_LOW_CPU"
     input:
         val reference_genome
@@ -47,6 +47,7 @@ process GENOME_BWA_INDEX {
 }
 
 process GENOME_SAMTOOLS_INDEX {
+    errorStrategy 'terminate'
     label "HIGH_MEM_HIGH_CPU"
     input:
         val reference_genome
