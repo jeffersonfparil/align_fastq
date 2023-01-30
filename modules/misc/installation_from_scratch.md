@@ -33,6 +33,7 @@ conda install -y -c bioconda java-jdk
 conda install -y -c bioconda picard
 conda install -y -c bioconda gatk4
 conda install -y -c bioconda bcftools
+conda install -y -c bioconda 'julia=1.7.1'
 ```
 
 5. Export environment and create a new environment based on the exported settings
