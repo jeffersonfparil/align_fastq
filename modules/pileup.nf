@@ -10,8 +10,12 @@ process PILEUP {
         val groupings
         val min_mapping_quality_Q
         val min_base_quality_Q
+        val window_size
+        val n_chromosomes
     output:
         val dir_reads
+        val window_size
+        val n_chromosomes
     shell:
     '''
     #!/usr/bin/env bash
@@ -52,6 +56,8 @@ process COVERAGE_BREADTH_AND_DEPTH {
     label "HIGH_MEM_HIGH_CPU"
     input:
         val dir_reads
+        val window_size
+        val n_chromosomes
     shell:
     '''
     #!/usr/bin/env bash
@@ -61,8 +67,8 @@ process COVERAGE_BREADTH_AND_DEPTH {
     parallel -j !{task.cpus} \
         julia !{projectDir}/../scripts/pileup_stats.jl \
             {} \
-            100000 \
-            7 \
+            !{window_size} \
+            !{n_chromosomes} \
     ::: $(ls *.pileup)
 
     echo "Output:"
@@ -75,6 +81,8 @@ workflow {
            params.dir_reads,
            params.groupings,
            params.min_mapping_quality_Q,
-           params.min_base_quality_Q) | \
+           params.min_base_quality_Q,
+           params.window_size,
+           params.n_chromosomes) | \
     COVERAGE_BREADTH_AND_DEPTH
 }
