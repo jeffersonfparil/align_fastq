@@ -67,7 +67,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             push!(vec_ave, μ)
             push!(vec_std, σ)
         else
-            push!(vec_idx_min_MODE, StatsBase.mode(vec_min))
+            push!(vec_idx_min_MODE, StatsBase.mode(vec_idx_min))
             push!(vec_min_MEAN, StatsBase.mean(vec_min))
             push!(vec_max_MEAN, StatsBase.mean(vec_max))
             push!(vec_ave_MEAN, StatsBase.mean(vec_ave))
@@ -87,7 +87,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             window_start_position = pos
         end
     end
-    push!(vec_idx_min_MODE, StatsBase.mode(vec_min))
+    push!(vec_idx_min_MODE, StatsBase.mode(vec_idx_min))
     push!(vec_min_MEAN, StatsBase.mean(vec_min))
     push!(vec_max_MEAN, StatsBase.mean(vec_max))
     push!(vec_ave_MEAN, StatsBase.mean(vec_ave))
@@ -248,7 +248,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     ### The most frequent least covered pool
     p5 = Plots.histogram(df.MODE_idx_min,
                          label="",
-                         xlabel="Pool",
+                         xlabel="Sample",
                          ylab="Frequency",
                          title="Which pool has the least coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
@@ -256,7 +256,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     Plots.xticks!(p5, collect(1:1:n_pools) .- 0.5, string.(Int.(collect(1:1:n_pools))));
     p6 = Plots.histogram(df.MODE_idx_min[df.MEAN_min .== 0.0],
                          label="",
-                         xlabel="Pool",
+                         xlabel="Sample",
                          ylab="Frequency",
                          title="Which pool has the most complete lack of coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
