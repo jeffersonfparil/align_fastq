@@ -247,6 +247,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
 
     ### PLOTS 5 and 6: The most frequent least covered pool
     p5 = Plots.histogram(df.MODE_idx_min,
+                         bins=1:(n_pools+1),
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
@@ -255,6 +256,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     xlims!(p5, 1, n_pools+1);
     Plots.xticks!(p5, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
     p6 = Plots.histogram(df.MODE_idx_min[df.MEAN_min .== 0.0],
+                         bins=1:(n_pools+1),
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
