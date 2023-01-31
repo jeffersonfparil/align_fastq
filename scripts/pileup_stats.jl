@@ -46,12 +46,12 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
         ω = maximum(cov)
         μ = StatsBase.mean(cov)
         σ = StatsBase.std(cov); σ = isnan(σ) ? 0.0 : σ
-        idx_α = σ==0.0 ? 0 : argmin(cov) ### Set idx to the 0th pool if all pools are equally covered
+        idx_α = σ==0.0 ? 0 : collect(1:length(cov))[cov .== minimum(cov)] ### Set idx to the 0th pool if all pools are equally covered
         if length(vec_chromosome) == 0
             push!(vec_chromosome, chr)
             push!(vec_window, 1)
             push!(vec_size, 1)
-            vec_idx_min = [idx_α]
+            vec_idx_min = [join(idx_α, ",")]
             vec_min = [α]
             vec_max = [ω]
             vec_ave = [μ]
@@ -61,7 +61,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             if sum(cov) > 0
                 vec_size[end] = vec_size[end] + 1
             end
-            push!(vec_idx_min, idx_α)
+            push!(vec_idx_min, join(idx_α, ","))
             push!(vec_min, α)
             push!(vec_max, ω)
             push!(vec_ave, μ)
@@ -79,7 +79,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
             push!(vec_chromosome, chr)
             push!(vec_window, vec_window[end] + 1)
             push!(vec_size, 1)
-            vec_idx_min = [idx_α]
+            vec_idx_min = [join(idx_α, ",")]
             vec_min = [α]
             vec_max = [ω]
             vec_ave = [μ]
@@ -100,7 +100,7 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
     out = DataFrames.DataFrame(chr=String.(vec_chromosome),
                                window=Int64.(vec_window),
                                n=Int64.(vec_size),
-                               MODE_idx_min=Float64.(vec_idx_min_MODE),
+                               MODE_idx_min=String.(vec_idx_min_MODE),
                                MEAN_min=Float64.(vec_min_MEAN),
                                MEAN_max=Float64.(vec_max_MEAN),
                                MEAN_mean=Float64.(vec_ave_MEAN),
@@ -246,10 +246,22 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     Plots.plot!(p4, x̂, ŷ, linecolor=:red, labels=fit_eq);
 
     ### PLOTS 5 and 6: The most frequent least covered pool
-    x = df.MODE_idx_min
-    idx = x .> 0.0
-    x = x[idx] ### remove instances where all pools are equally covered
-    y = x[df.MEAN_min[idx] .== 0.0] ### keep the least covered pools where the coverage is exactly zero
+    x0 = split.(df.MODE_idx_min, ",")
+    x = []
+    for i in x0
+        append!(x, collect(i))
+    end
+    x = parse.(Int, x)
+    x = x[x .> 0.0] ### remove instances where all pools are equally covered
+    
+    ### keep the least covered pools where the coverage is exactly zero
+    y0 = split.(df.MODE_idx_min[df.MEAN_min .== 0], ",")
+    y = []
+    for i in y0
+        append!(y, collect(i))
+    end
+    y = parse.(Int, y)
+    y = y[y .> 0.0] ### remove instances where all pools are equally covered
     p5 = Plots.histogram(x,
                          bins=1:(n_pools+1),
                          label="",

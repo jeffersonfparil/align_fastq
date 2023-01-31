@@ -77,12 +77,13 @@ process COVERAGE_BREADTH_AND_DEPTH {
 }
 
 workflow {
-    PILEUP(params.reference_genome,
-           params.dir_reads,
-           params.groupings,
-           params.min_mapping_quality_Q,
-           params.min_base_quality_Q,
-           params.window_size,
-           params.n_chromosomes) | \
-    COVERAGE_BREADTH_AND_DEPTH
+    // PILEUP(params.reference_genome,
+    //        params.dir_reads,
+    //        params.groupings,
+    //        params.min_mapping_quality_Q,
+    //        params.min_base_quality_Q,
+    //        params.window_size,
+    //        params.n_chromosomes) | \
+    COVERAGE_BREADTH_AND_DEPTH(params.dir_reads, params.window_size,
+           params.n_chromosomes)
 }
