@@ -42,11 +42,11 @@ function pileup_stats(filename::String, window_size::Int64=100_000)::DataFrames.
         chr = line[1]
         pos = parse(Int64, line[2])
         cov = parse.(Int64, line[4:3:n])
-        idx_α = argmin(cov)
         α = minimum(cov)
         ω = maximum(cov)
         μ = StatsBase.mean(cov)
         σ = StatsBase.std(cov); σ = isnan(σ) ? 0.0 : σ
+        idx_α = σ==0.0 ? 0 : argmin(cov) ### Set idx to the 0th pool if all pools are equally covered
         if length(vec_chromosome) == 0
             push!(vec_chromosome, chr)
             push!(vec_window, 1)
@@ -246,7 +246,11 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
     Plots.plot!(p4, x̂, ŷ, linecolor=:red, labels=fit_eq);
 
     ### PLOTS 5 and 6: The most frequent least covered pool
-    p5 = Plots.histogram(df.MODE_idx_min,
+    x = df.MODE_idx_min
+    idx = x .> 0.0
+    x = x[idx] ### remove instances where all pools are equally covered
+    y = x[df.MEAN_min[idx] .== 0.0] ### keep the least covered pools where the coverage is exactly zero
+    p5 = Plots.histogram(x,
                          bins=1:(n_pools+1),
                          label="",
                          xlabel="Sample",
@@ -255,7 +259,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
     xlims!(p5, 1, n_pools+1);
     Plots.xticks!(p5, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
-    p6 = Plots.histogram(df.MODE_idx_min[df.MEAN_min .== 0.0],
+    p6 = Plots.histogram(y,
                          bins=1:(n_pools+1),
                          label="",
                          xlabel="Sample",
