@@ -245,23 +245,23 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
                     top_margin=50px, left_margin=80px, bottom_margin=50px);
     Plots.plot!(p4, x̂, ŷ, linecolor=:red, labels=fit_eq);
 
-    ### The most frequent least covered pool
+    ### PLOTS 5 and 6: The most frequent least covered pool
     p5 = Plots.histogram(df.MODE_idx_min,
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
                          title="Which pool has the least coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
-    xlims!(p5, 0, n_pools);
-    Plots.xticks!(p5, collect(1:1:n_pools) .- 0.5, string.(Int.(collect(1:1:n_pools))));
+    xlims!(p5, 1, n_pools+1);
+    Plots.xticks!(p5, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
     p6 = Plots.histogram(df.MODE_idx_min[df.MEAN_min .== 0.0],
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
                          title="Which pool has the most complete lack of coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
-    xlims!(p6, 0, n_pools);
-    Plots.xticks!(p6, collect(1:1:n_pools) .- 0.5, string.(Int.(collect(1:1:n_pools))));
+    xlims!(p6, 1, n_pools+1);
+    Plots.xticks!(p6, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
     
     ### Merge plots
     pout = Plots.plot(p1, p2, p3, p4, p5, p6, layout=(3,2), size=(1_600, 1_500));
