@@ -267,7 +267,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
-                         title="Which pool has the least coverage?",
+                         title="Which sample has the least coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
     xlims!(p5, 1, n_pools+1);
     Plots.xticks!(p5, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
@@ -276,7 +276,7 @@ function plot_breadth_depth(X::DataFrames.DataFrame, number_of_chromosomes_to_in
                          label="",
                          xlabel="Sample",
                          ylab="Frequency",
-                         title="Which pool has the most complete lack of coverage?",
+                         title="Which sample has the most complete lack of coverage?",
                          top_margin=50px, left_margin=80px, bottom_margin=50px);
     xlims!(p6, 1, n_pools+1);
     Plots.xticks!(p6, collect(1:1:n_pools) .+ 0.5, string.(Int.(collect(1:1:n_pools))));
