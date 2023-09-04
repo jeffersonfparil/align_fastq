@@ -36,6 +36,7 @@ process PILEUP {
     echo 'Pileup in parallel.'
     parallel \
         -j !{task.cpus} \
+        --tmpdir !{dir_reads} \
         sh !{projectDir}/../scripts/pileup.sh \
             {} \
             !{reference_genome} \
