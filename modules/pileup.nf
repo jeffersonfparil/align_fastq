@@ -29,7 +29,7 @@ process PILEUP {
         rm bamlist-${g}.txt || touch bamlist-${g}.txt
         for name in $(cat names_within_group.tmp)
         do
-            find !{dir_reads} -name '*.bam' | grep "paired-" | grep "${name}" | head -n1 >> bamlist-${g}.txt
+            find !{dir_reads} -name '*.bam' | grep -v "unpaired-" | grep -v "deduped" | grep "${name}" | head -n1 >> bamlist-${g}.txt
         done
     done
     

@@ -65,6 +65,7 @@ time ./run_poolseq.sh
 ```
 
 Run each module individually, usually to troubleshoot:
+
 ```shell
 time nextflow run modules/setup.nf -c config/params.config              ### Setup reference genome and Julia packages
 time nextflow run modules/trim_and_qc.nf -c config/params.config        ### Remove adapters and perform quality check of the raw reads
@@ -75,4 +76,7 @@ time nextflow run modules/synchronise.nf -c config/params.config        ### For 
 ### For Indi-seq
 time nextflow run modules/dedup.nf -c config/params.config              ### For Indi-seq data: remove PCR duplicates from the raw reads
 time nextflow run modules/variant_calling.nf -c config/params.config    ### For Indi-seq data: perform varant calling but first index the alignments, and add read groups, and finally merge the VCF files
+
+### Print the most recent error log
+cat $(ls -r work/*/*/.command.err | tail -n1)
 ```

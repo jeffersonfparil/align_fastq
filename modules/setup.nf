@@ -101,6 +101,20 @@ process JULIA_INSTALL_PACKAGES {
     '''
 }
 
+process INSTALL_POOLGEN {
+    label "HIGH_MEM_HIGH_CPU"
+    input:
+        val dir
+    output:
+        val 0
+    shell:
+    '''
+    #!/usr/bin/env bash
+    cd !{dir}
+    cargo install --git https://github.com/jeffersonfparil/poolgen.git
+    '''
+}
+
 workflow {
     GENOME_FIX(params.reference_genome) | \
     (GENOME_BWA_INDEX & GENOME_SAMTOOLS_INDEX & GENOME_GATK4_INDEX)
