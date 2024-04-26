@@ -32,7 +32,7 @@ process ALIGN {
             ${r2} | \
         samtools view \
             -@ !{task.cpus} \
-            -b \
+            -bu \
             -q !{min_mapping_quality_Q} \
             -T !{reference_genome} | \
         samtools sort \
